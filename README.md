@@ -61,6 +61,7 @@ Basic setup:
 ## Basics:
 
 Building maps is fairly easy with jQuery Seat Charts, you can literally pass an array of strings which represents succeeding rows. Let's take a look at a theatre example:
+
 	//Seat map definition
 	[
 		'aaaaaa__DDDDD',
