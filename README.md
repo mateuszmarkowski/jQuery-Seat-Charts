@@ -1,3 +1,4 @@
+# jQuery Seat Charts
 
 ### jQuery Seat Charts (JSC) is a full-blown seat map library. It will generate an accessible map, legend, handle mouse & keyboard events and finally give you powerful selectors to control your map.
 
@@ -519,11 +520,3 @@ jQuery Seat Charts is released under [MIT license](http://choosealicense.com/lic
 
 #### How is JSC accessible?
 JSC implements [WAI-ARIA](www.w3.org/WAI/intro/aria) standard meaning that people using solely keyboards will share the same experience as mouse-users. You can easily check it yourself navigating with arrows and hitting spacebar instead of mouse click.
-
-## Download
-
-You can either checkout directly from my Mercurial repo:
-
-	hg checkout ….
-
-Or download the latest version here: jQuery Seat Charts 0.2.0. It's not a CDN, so please do not hotlink here.
