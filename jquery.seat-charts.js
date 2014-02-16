@@ -57,11 +57,11 @@
 			seat = (function(seatCharts, seatChartsSettings) {
 				return function (setup) {
 					var fn = this;
-
+					
 					fn.settings = $.extend({
 						status : 'available', //available, unavailable, selected
 						style  : 'available',
-						data   : seatChartsSettings.seats[setup.character].data || {}
+						data   : seatChartsSettings.seats[setup.character] || {}
 						//anything goes here?
 					}, setup);
 
