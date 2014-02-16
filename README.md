@@ -26,7 +26,7 @@ Basic setup:
 				}
 			
 			},
-			click: {
+			click: function () {
 				if (this.status() == 'available') {
 					//do some stuff, i.e. add to the cart
 					return 'selected';
