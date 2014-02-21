@@ -95,7 +95,7 @@
 					};
 
 					fn.style = function() {
-							
+
 						return arguments.length == 1 ?
 							(function(newStyle) {
 								var oldStyle = fn.settings.style;
@@ -118,7 +118,7 @@
 					
 					//either set or retrieve
 					fn.status = function() {
-					
+	
 						return fn.settings.status = arguments.length == 1 ? 
 							fn.style(arguments[0]) : fn.settings.status;
 					};
@@ -454,10 +454,11 @@
 					status     : function() {
 						var args = arguments,
 							that = this;
-												
+						//if there's just one seat in the set and user didn't pass any params, return current status
 						return this.length == 1 && args.length == 0 ? this.seats[0].status() : (function() {
+							//otherwise call status function for each of the seats in the set
 							$.each(that.seats, function() {
-								that.status.apply(that.status, args);
+								this.status.apply(this, args);
 							});
 						})();
 					},
