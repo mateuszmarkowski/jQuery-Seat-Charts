@@ -266,9 +266,9 @@ An array of legend item details. Each array element should be a three-element ar
 	legend : {
 		node  : $('#my-legend-container'),
 		items : [
-			[ v, available,   'VIP seats!' ],
-			[ e, available,   'Economy seats'],
-			[ e, unavailable, 'Unavailable economy seats' ]
+			[ 'v', 'available',   'VIP seats!' ],
+			[ 'e', 'available',   'Economy seats'],
+			[ 'e', 'unavailable', 'Unavailable economy seats' ]
 		]
 	}
 
