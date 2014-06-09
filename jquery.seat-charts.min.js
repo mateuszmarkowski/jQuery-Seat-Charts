@@ -1,5 +1,5 @@
 /*!
- * jQuery-Seat-Charts v1.0.0
+ * jQuery-Seat-Charts v1.1.0
  * https://github.com/mateuszmarkowski/jQuery-Seat-Charts
  *
  * Copyright 2013, 2014 Mateusz Markowski
