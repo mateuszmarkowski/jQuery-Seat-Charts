@@ -4,6 +4,7 @@
 		
 	$.fn.seatCharts = function (setup) {
 
+		//if there's seatCharts object associated with the current element, return it
 		if (this.data('seatCharts')) {
 			return this.data('seatCharts');
 		}
@@ -61,6 +62,7 @@
 					fn.settings = $.extend({
 						status : 'available', //available, unavailable, selected
 						style  : 'available',
+						//make sure there's an empty hash if user doesn't pass anything
 						data   : seatChartsSettings.seats[setup.character] || {}
 						//anything goes here?
 					}, setup);
@@ -77,11 +79,13 @@
 						})
 						.text(fn.settings.label)
 						.addClass(['seatCharts-seat', 'seatCharts-cell', 'available'].concat(
+							//let's merge custom user defined classes with standard JSC ones
 							fn.settings.classes, 
 							typeof seatChartsSettings.seats[fn.settings.character] == "undefined" ? 
 								[] : seatChartsSettings.seats[fn.settings.character].classes
 							).join(' '));
-										
+					
+					//basically a wrapper function
 					fn.data = function() {
 						return fn.settings.data;
 					};
@@ -94,12 +98,20 @@
 						return fn.settings.$node;						
 					};
 
+					/*
+					 * Can either set or return status depending on arguments.
+					 *
+					 * If there's no argument, it will return the current style.
+					 *
+					 * If you pass an argument, it will update seat's style
+					 */
 					fn.style = function() {
 
 						return arguments.length == 1 ?
 							(function(newStyle) {
 								var oldStyle = fn.settings.style;
 
+								//if nothing changes, do nothing
 								if (newStyle == oldStyle) {
 									return;
 								}
@@ -108,6 +120,7 @@
 								fn.settings.$node
 									.attr('aria-checked', newStyle == 'selected');
 
+								//if user wants to animate status changes, let him do this
 								seatChartsSettings.animate ?
 									fn.settings.$node.switchClass(oldStyle, newStyle, 200) :
 									fn.settings.$node.removeClass(oldStyle).addClass(newStyle);
@@ -123,6 +136,7 @@
 							fn.style(arguments[0]) : fn.settings.status;
 					};
 					
+					//using immediate function to convienietly get shortcut variables
 					(function(seatSettings, character, seat) {
 						//attach event handlers
 						$.each(['click', 'focus', 'blur'], function(index, callback) {
@@ -148,14 +162,18 @@
 						.on('click',      fn.click)
 						.on('mouseenter', fn.focus)
 						.on('mouseleave', fn.blur)
+						
+						//keydown requires quite a lot of logic, so we know where to move the focus
 						.on('keydown',    (function(seat, $seat) {
 						
 							return function (e) {
 								
 								var $newSeat;
 								
+								//everything depends on the pressed key
 								switch (e.which) {
-									case 32: //spacebar
+									//spacebar will just trigger the same event mouse click does
+									case 32:
 										e.preventDefault();
 										seat.click();
 										break;
@@ -247,7 +265,7 @@
 		//true -> deep copy!
 		$.extend(true, settings, setup);		
 		
-		//Generate default row ids
+		//Generate default row ids unless user passed his own
 		settings.naming.rows = settings.naming.rows || (function(length) {
 			var rows = [];
 			for (var i = 1; i <= length; i++) {
@@ -256,7 +274,7 @@
 			return rows;
 		})(settings.map.length);
 		
-		//Generate default column ids
+		//Generate default column ids unless user passed his own
 		settings.naming.columns = settings.naming.columns || (function(length) {
 			var columns = [];
 			for (var i = 1; i <= length; i++) {
@@ -285,6 +303,7 @@
 		
 		fn.append($headerRow);
 		
+		//do this for each map row
 		$.each(settings.map, function(row, characters) {
 
 			var $row = $('<div></div>').addClass('seatCharts-row');
@@ -297,10 +316,11 @@
 				);
 			}
 
-
+			//do this for each seat (letter)
 			$.each(characters.split(''), function(column, character) {
 
 				$row.append(character != '_' ?
+					//if the character is not an underscore (empty space)
 					(function(naming) {
 	
 						//so users don't have to specify empty objects
@@ -321,6 +341,7 @@
 						return seats[id].node();
 						
 					})(settings.naming) :
+					//this is just an empty space (_)
 					$('<div></div>').addClass('seatCharts-cell seatCharts-space')	
 				);
 			});
@@ -328,7 +349,9 @@
 			fn.append($row);
 		});
 	
+		//if there're any legend items to be rendered
 		settings.legend.items.length ? (function(legend) {
+			//either use user-defined container or create our own and insert it right after the seat chart div
 			var $container = (legend.node || $('<div></div').insertAfter(fn))
 				.addClass('seatCharts-legend');
 				
@@ -342,6 +365,7 @@
 						.addClass('seatCharts-legendItem')
 						.append(
 							$('<div></div>')
+								//merge user defined classes with our standard ones
 								.addClass(['seatCharts-seat', 'seatCharts-cell', item[1]].concat(
 									settings.classes, 
 									typeof settings.seats[item[0]] == "undefined" ? [] : settings.seats[item[0]].classes).join(' ')
@@ -404,6 +428,7 @@
 			},
 			node       : function() {
 				var fn = this;
+				//basically create a CSS query to get all seats by their DOM ids
 				return $('#' + fn.seatIds.join(',#'));
 			},
 
@@ -412,6 +437,7 @@
 			
 				var seatSet = fn.set();
 			
+				//user searches just for a particual character
 				return query.length == 1 ? (function(character) {
 					fn.each(function() {
 						if (this.char() == character) {
@@ -421,7 +447,9 @@
 					
 					return seatSet;
 				})(query) : (function() {
+					//user runs a more sophisticated query, so let's see if there's a dot
 					return query.indexOf('.') > -1 ? (function() {
+						//there's a dot which separates character and the status
 						var parts = query.split('.');
 						
 						fn.each(function(seatId) {
