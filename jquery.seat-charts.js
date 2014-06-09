@@ -1,3 +1,11 @@
+/*!
+ * jQuery-Seat-Charts v1.0.0
+ * https://github.com/mateuszmarkowski/jQuery-Seat-Charts
+ *
+ * Copyright 2013, 2014 Mateusz Markowski
+ * Released under the MIT license
+ */
+
 (function($) {
 		
 	//'use strict';	
@@ -248,7 +256,7 @@
 										seats[$newSeat.attr('id')].focus();
 										$newSeat.focus();
 										
-										//update our "aria" reference
+										//update our "aria" reference with the new seat id
 										seatCharts.attr('aria-activedescendant', $newSeat.attr('id'));
 																			
 										break;										
@@ -256,16 +264,21 @@
 									case 37:
 									case 39:
 										e.preventDefault();
+										/*
+										 * The logic here is slightly different from the one for up/down arrows.
+										 * User will be able to browse the whole map using just left/right arrow, because
+										 * it will move to the next row when we reach the right/left-most seat.
+										 */
 										$newSeat = (function($seats) {
 										
 											if (!$seats.index($seat) && e.which == 37) {
-											
+												//user has pressed left arrow and we're currently on the left-most seat
 												return $seats.last();
 											} else if ($seats.index($seat) == $seats.length -1 && e.which == 39) {
-								
+												//user has pressed right arrow and we're currently on the right-most seat
 												return $seats.first();
 											} else {
-											
+												//simply move one seat left or right depending on the key
 												return $seats.eq($seats.index($seat) + (e.which == 37 ? (-1) : (+1)));
 											}
 
@@ -277,9 +290,12 @@
 											return;
 										}
 											
+										//handle focus
 										seat.blur();	
 										seats[$newSeat.attr('id')].focus();
 										$newSeat.focus();
+										
+										//update our "aria" reference with the new seat id
 										seatCharts.attr('aria-activedescendant', $newSeat.attr('id'));
 										break;	
 									default:
@@ -368,9 +384,7 @@
 							column    : column,
 							character : character
 						});
-						
-						
-						
+
 						seatIds.push(id);
 						return seats[id].node();
 						
