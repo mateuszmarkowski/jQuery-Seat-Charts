@@ -55,6 +55,7 @@
 				seats   : {}
 			
 			},
+			//seat will be basically a seat object which we'll when generating the map
 			seat = (function(seatCharts, seatChartsSettings) {
 				return function (setup) {
 					var fn = this;
@@ -116,6 +117,7 @@
 									return;
 								}
 								
+								//focused is a special style which is not associated with status
 								fn.settings.status = newStyle != 'focused' ? newStyle : fn.settings.status;
 								fn.settings.$node
 									.attr('aria-checked', newStyle == 'selected');
@@ -141,8 +143,10 @@
 						//attach event handlers
 						$.each(['click', 'focus', 'blur'], function(index, callback) {
 						
+							//we want to be able to call the functions for each seat object
 							fn[callback] = function() {
 								if (callback == 'focus') {
+									//if there's already a focused element, we have to remove focus from it first
 									if (seatCharts.attr('aria-activedescendant') !== undefined) {
 										seats[seatCharts.attr('aria-activedescendant')].blur();
 									}
@@ -150,20 +154,27 @@
 									seat.node().focus();
 								}
 							
+								/*
+								 * User can pass his own callback function, so we have to first check if it exists
+								 * and if not, use our default callback.
+								 *
+								 * Each callback function is executed in the current seat context.
+								 */
 								return fn.style(typeof seatSettings[character][callback] === 'function' ?
 									seatSettings[character][callback].apply(seat) : seatChartsSettings[callback].apply(seat));
 							};
 							
 						});
-							
+					//the below will become seatSettings, character, seat thanks to the immediate function		
 					})(seatChartsSettings.seats, fn.settings.character, fn);
 							
 					fn.node()
+						//the first three mouse events are simple
 						.on('click',      fn.click)
 						.on('mouseenter', fn.focus)
 						.on('mouseleave', fn.blur)
 						
-						//keydown requires quite a lot of logic, so we know where to move the focus
+						//keydown requires quite a lot of logic, because we have to know where to move the focus
 						.on('keydown',    (function(seat, $seat) {
 						
 							return function (e) {
