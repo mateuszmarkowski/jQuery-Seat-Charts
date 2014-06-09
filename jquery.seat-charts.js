@@ -366,9 +366,35 @@
 				);
 			}
 
-			//do this for each seat (letter)
-			$.each(characters.split(''), function(column, character) {
-
+			/*
+			 * Do this for each seat (letter)
+			 *
+			 * Now users will be able to pass custom ID and label which overwrite the one that seat would be assigned by getId and
+			 * getLabel
+			 *
+			 * New format is like this:
+			 * a[ID,label]a[ID]aaaaa
+			 *
+			 * So you can overwrite the ID or label (or both) even for just one seat.
+			 * Basically ID should be first, so if you want to overwrite just label write it as follows:
+			 * a[,LABEL]
+			 *
+			 * Allowed characters in IDs areL 0-9, a-z, A-Z, _
+			 * Allowed characters in labels are: 0-9, a-z, A-Z, _, ' ' (space)
+			 *
+			 */
+			 
+			$.each(characters.match(/[a-z_]{1}(\[[0-9a-z_]{0,}(,[0-9a-z_ ]+)?\])?/gi), function (column, characterParams) { 
+				var matches         = characterParams.match(/([a-z_]{1})(\[([0-9a-z_ ,]+)\])?/i),
+					//no matter if user specifies [] params, the character should be in the second element
+					character       = matches[1],
+					//check if user has passed some additional params to override id or label
+					params          = typeof matches[3] !== 'undefined' ? matches[3].split(',') : [],
+					//id param should be first
+					overrideId      = params.length ? params[0] : null,
+					//label param should be second
+					overrideLabel   = params.length === 2 ? params[1] : null;
+								
 				$row.append(character != '_' ?
 					//if the character is not an underscore (empty space)
 					(function(naming) {
@@ -376,10 +402,11 @@
 						//so users don't have to specify empty objects
 						settings.seats[character] = character in settings.seats ? settings.seats[character] : {};
 	
-						var id = naming.getId(character, naming.rows[row], naming.columns[column]);
+						var id = overrideId ? overrideId : naming.getId(character, naming.rows[row], naming.columns[column]);
 						seats[id] = new seat({
 							id        : id,
-							label     : naming.getLabel(character, naming.rows[row], naming.columns[column]),
+							label     : overrideLabel ?
+								overrideLabel : naming.getLabel(character, naming.rows[row], naming.columns[column]),
 							row       : row,
 							column    : column,
 							character : character
