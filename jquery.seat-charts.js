@@ -192,40 +192,63 @@
 									case 40:
 									case 38:
 										e.preventDefault();
+										
+										/*
+										 * This is a recursive, immediate function which searches for the first "focusable" row.
+										 * 
+										 * We're using immediate function because we want a convenient access to some DOM elements
+										 * We're using recursion because sometimes we may hit an empty space rather than a seat.
+										 *
+										 */
 										$newSeat = (function findAvailable($rows, $seats, $currentRow) {
 											var $newRow;
 											
+											//let's determine which row should we move to
+											
 											if (!$rows.index($currentRow) && e.which == 38) {
+												//if this is the first row and user has pressed up arrow, move to the last row
 												$newRow = $rows.last();
 											} else if ($rows.index($currentRow) == $rows.length-1 && e.which == 40) {
+												//if this is the last row and user has pressed down arrow, move to the first row
 												$newRow = $rows.first();
 											} else {
+												//using eq to get an element at the desired index position
 												$newRow = $rows.eq(
+													//if up arrow, then decrement the index, if down increment it
 													$rows.index($currentRow) + (e.which == 38 ? (-1) : (+1))
 												);
 											}												
-
+											
+											//now that we know the row, let's get the seat using the current column position
 											$newSeat = $newRow.find('.seatCharts-seat,.seatCharts-space').eq($seats.index($seat));
 											
+											//if the seat we found is a space, keep looking further
 											return $newSeat.hasClass('seatCharts-space') ?
 												findAvailable($rows, $seats, $newRow) : $newSeat;
 											
 										})($seat
+											//get a reference to the parent container and then select all rows but the header
 												.parents('.seatCharts-container')
 												.find('.seatCharts-row:not(.seatCharts-header)'),
 											$seat
+											//get a reference to the parent row and then find all seat cells (both seats & spaces)
 												.parents('.seatCharts-row:first')
 												.find('.seatCharts-seat,.seatCharts-space'),
+											//get a reference to the current row
 											$seat.parents('.seatCharts-row:not(.seatCharts-header)')
 										);
 										
+										//we couldn't determine the new seat, so we better give up
 										if (!$newSeat.length) {
 											return;
 										}
-											
-										seat.blur();	
+										
+										//remove focus from the old seat and put it on the new one
+										seat.blur();
 										seats[$newSeat.attr('id')].focus();
 										$newSeat.focus();
+										
+										//update our "aria" reference
 										seatCharts.attr('aria-activedescendant', $newSeat.attr('id'));
 																			
 										break;										
