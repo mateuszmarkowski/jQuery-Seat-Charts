@@ -266,9 +266,9 @@ An array of legend item details. Each array element should be a three-element ar
 	legend : {
 		node  : $('#my-legend-container'),
 		items : [
-			[ v, available,   'VIP seats!' ],
-			[ e, available,   'Economy seats'],
-			[ e, unavailable, 'Unavailable economy seats' ]
+			[ v, 'available',   'VIP seats!' ],
+			[ e, 'available',   'Economy seats'],
+			[ e, 'unavailable', 'Unavailable economy seats' ]
 		]
 	}
 
@@ -285,6 +285,20 @@ An array of strings that represents your map:
 Underscore is used as a spacer between seats.
 
 **Please note**: number of columns must be equal in each row.
+
+**New**: You can now override label and ID per character. This is optional and can be applied to any number of seats:
+
+
+	[
+		'a[ID,LABEL]a[ID2,LABEL2]a___a[JUST_ID1]aa',
+		'aaaa_aaaa[,JUST_LABEL1]',
+		'aaaa_aaaa'
+	]
+
+ID and/or label should be specified after the letter and enclosed in square brackets. ID should go first, optionally followed by custom label. If you just want to specify label without overriding ID, leave ID empty: a[,Just Label]
+
+ID may contain letters, numbers and underscores. Label can contain the same groups of characters as well as spaces.
+
 
 ### naming
 
@@ -317,6 +331,9 @@ Callback which may accept the following parameters: *character*, *row*, *column*
 	}
 
 Labels will be displayed over seats, so if you don't want any labels, just return an empty string.
+
+Sometimes it can be really hard to generate labels you want with getLabel, so now it's possible to specify custom labels per each seat. Please take a look at the map section.
+
 
 **left**
 
