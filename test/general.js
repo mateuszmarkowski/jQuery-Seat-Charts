@@ -11,9 +11,9 @@
 		$fixture.append($div);
 
 		$div.seatCharts(
-			$.extend(true, {}, params, {
+			$.extend(true, {}, {
 				map: [
-					'aaaaa',
+					'aa_aa',
 					'bbbbb',
 					'bbbbb',
 				],
@@ -28,7 +28,7 @@
 					}					
 				
 				}
-			})
+			}, params)
 		);
 		
 		return $div;
@@ -36,13 +36,18 @@
 	
 
 	test('Testing general structure of a simple map.', function () {
-		expect(4);
+		expect(5);
 	
-		var $seatCharts = simpleMapSetup();
+		var $seatCharts = simpleMapSetup(),
+			$space = $seatCharts.find('.seatCharts-row:eq(1) .seatCharts-cell:eq(3)');
 
 		equal($seatCharts.find('.seatCharts-row').length, 4, 'Number of rows.');
 
-		for (var i = 1; i <= 3; i += 1) {
+		ok($space.hasClass('seatCharts-space') && !$space.hasClass('seatCharts-seat'), 'There should be a spacer cell in the first row.')
+
+		equal($seatCharts.find('.seatCharts-row:eq(1) .seatCharts-seat').length, 4, 'Number of columns in row 1.');
+
+		for (var i = 2; i <= 3; i += 1) {
 			equal($seatCharts.find('.seatCharts-row:eq('+(i)+') .seatCharts-seat').length, 5, 'Number of columns in row '+i+'.');
 		}		
 
@@ -86,6 +91,24 @@
 		}
 	});
 	
+	test('Testing custom column & row labels', function () {
+		expect(3);
+	
+		var $seatCharts = simpleMapSetup({
+			naming : {
+				columns : ['I', 'II', 'III', 'IV', 'V'],
+				rows    : ['a', 'b', 'c']
+			}
+		});
+		
+		equal($seatCharts.find('.seatCharts-row:eq(0) .seatCharts-cell:eq(0)').text(), '', 'Top leftmost cell should be empty.');
+		
+		equal($seatCharts.find('.seatCharts-row:eq(0) .seatCharts-cell:eq(3)').text(), 'III', '3rd column header has correct label.');
+		
+		equal($seatCharts.find('.seatCharts-row:eq(2) .seatCharts-cell:eq(0)').text(), 'b', '2nd row header has correct label.');
+		
+	});	
+	
 	test('Testing default seat labels and IDs', function () {
 		expect(4);
 	
@@ -93,13 +116,52 @@
 
 		equal($seatCharts.find('.seatCharts-row:eq(1) .seatCharts-seat:eq(0)').text(), '1', 'First seat in the first row label.');
 
-		equal($seatCharts.find('.seatCharts-row:eq(1) .seatCharts-seat:eq(2)').text(), '3', 'Third seat in the first row label.');
+		equal($seatCharts.find('.seatCharts-row:eq(1) .seatCharts-seat:eq(2)').text(), '4', 'Third seat in the first row label.');
 		
 		equal($seatCharts.find('#3_5').length, 1, 'Seat with id 3_5 exists.');
 		
 		equal($seatCharts.find('#3_6').length, 0, 'And it is the last seat id.');
 	});
 	
+	test('Testing custom seat labels and IDs', function () {
+		expect(4);
+	
+		var getIdExecutions = 0,
+			getLabelExecutions = 0,
+			$seatCharts = simpleMapSetup({
+			naming : {
+				getId : function (character, row, column) {
+					getIdExecutions += 1
+					//return all arguments separated with -
+					return [].slice.call(arguments).join('-');
+				},
+				getLabel : function (character, row, column) {
+					getLabelExecutions += 1;
+					//return all arguments separated with +
+					return [].slice.call(arguments).join('+');
+				}
+			}			
+		});
+
+		equal(getIdExecutions, 14, 'getId has been called for each seat.');
+		equal(getLabelExecutions, 14, 'getLabel has been called for each seat.');
+
+		equal($seatCharts.find('.seatCharts-row:eq(1) .seatCharts-seat:eq(2)').text(), 'a+1+4', 'Correct label assigned.');
+		
+		equal($seatCharts.find('.seatCharts-row:eq(3) .seatCharts-seat:eq(4)').attr('id'), 'b-3-5', 'Correct id assigned.');
+
+	});	
+	
+	test('Testing disabled left & top containers for labels', function () {
+		var $seatCharts = simpleMapSetup({
+			naming : {
+				top: false,
+				left: false
+			}
+		});
+
+		ok($seatCharts.find('.seatCharts-row:eq(0) .seatCharts-cell:eq(0)').hasClass('seatCharts-seat'), 'Top leftmost cell should contain a seat.');
+	})
 	
 	test('Testing legend with container specified', function () {
 		expect(4);
@@ -164,6 +226,6 @@
 		
 		equal($item.find('.seatCharts-legendDescription').text(), 'A seat when available', 'The first item has correct label assigned.');
 		
-	});
+	});	
 
 })(jQuery);
