@@ -15,7 +15,7 @@
 				map: [
 					'aa_aa',
 					'bbbbb',
-					'bbbbb',
+					'bbbbb'
 				],
 				seats: {
 					a: {
@@ -129,6 +129,72 @@
 		var getIdExecutions = 0,
 			getLabelExecutions = 0,
 			$seatCharts = simpleMapSetup({
+				naming : {
+					getId : function (character, row, column) {
+						getIdExecutions += 1
+						//return all arguments separated with -
+						return [].slice.call(arguments).join('-');
+					},
+					getLabel : function (character, row, column) {
+						getLabelExecutions += 1;
+						//return all arguments separated with +
+						return [].slice.call(arguments).join('+');
+					}
+				}			
+			});
+
+		equal(getIdExecutions, 14, 'getId has been called for each seat.');
+		equal(getLabelExecutions, 14, 'getLabel has been called for each seat.');
+
+		equal($seatCharts.find('.seatCharts-row:eq(1) .seatCharts-seat:eq(2)').text(), 'a+1+4', 'Correct label assigned.');
+		
+		equal($seatCharts.find('.seatCharts-row:eq(3) .seatCharts-seat:eq(4)').attr('id'), 'b-3-5', 'Correct id assigned.');
+
+	});	
+	
+	test('Testing overriding labels and IDs', function () {
+		expect(10);
+	
+		var $seatCharts = simpleMapSetup({
+			map: [
+				'a[1_A1,A1]a[1_A2,A2]_aa',
+				'bbbbb',
+				'bb[3_B2]bbb[,B5]'
+			]
+		}),
+		//a[1_A1,A1]
+		$seat1 = $seatCharts.find('.seatCharts-row:eq(1) .seatCharts-seat:eq(0)'),
+		//a[1_A2,A2]
+		$seat2 = $seatCharts.find('.seatCharts-row:eq(1) .seatCharts-seat:eq(1)'),
+		//a
+		$seat3 = $seatCharts.find('.seatCharts-row:eq(1) .seatCharts-seat:eq(2)'),
+		//b[3_B2]
+		$seat4 = $seatCharts.find('.seatCharts-row:eq(3) .seatCharts-seat:eq(1)'),
+		//b[,B5]
+		$seat5 = $seatCharts.find('.seatCharts-row:eq(3) .seatCharts-seat:eq(4)');
+		
+		equal($seat1.text(), 'A1', 'Seat 1 has correct label assigned.');
+		equal($seat1.attr('id'), '1_A1', 'Seat 1 has correct id assigned.');
+		
+		equal($seat2.text(), 'A2', 'Seat 2 has correct label assigned.');
+		equal($seat2.attr('id'), '1_A2', 'Seat 2 has correct id assigned.');
+		
+		equal($seat3.text(), '4', 'Seat 3 has correct label assigned.');
+		equal($seat3.attr('id'), '1_4', 'Seat 3 has correct id assigned.');
+		
+		equal($seat4.text(), '2', 'Seat 4 has correct label assigned.');
+		equal($seat4.attr('id'), '3_B2', 'Seat 4 has correct id assigned.');
+		
+		equal($seat5.text(), 'B5', 'Seat 5 has correct label assigned.');
+		equal($seat5.attr('id'), '3_5', 'Seat 5 has correct id assigned.');								
+	});
+	
+	test('Testing overriding+custom labels and IDs', function () {
+		expect(12);
+	
+		var getIdExecutions = 0,
+			getLabelExecutions = 0,
+			$seatCharts = simpleMapSetup({
 			naming : {
 				getId : function (character, row, column) {
 					getIdExecutions += 1
@@ -140,16 +206,41 @@
 					//return all arguments separated with +
 					return [].slice.call(arguments).join('+');
 				}
-			}			
-		});
-
-		equal(getIdExecutions, 14, 'getId has been called for each seat.');
-		equal(getLabelExecutions, 14, 'getLabel has been called for each seat.');
-
-		equal($seatCharts.find('.seatCharts-row:eq(1) .seatCharts-seat:eq(2)').text(), 'a+1+4', 'Correct label assigned.');
+			},		
+			map: [
+				'a[1_A1,A1]a[1_A2,A2]_aa',
+				'bbbbb',
+				'bb[3_B2]bbb[,B5]'
+			]
+		}),
+		//a[1_A1,A1]
+		$seat1 = $seatCharts.find('.seatCharts-row:eq(1) .seatCharts-seat:eq(0)'),
+		//a[1_A2,A2]
+		$seat2 = $seatCharts.find('.seatCharts-row:eq(1) .seatCharts-seat:eq(1)'),
+		//a
+		$seat3 = $seatCharts.find('.seatCharts-row:eq(1) .seatCharts-seat:eq(2)'),
+		//b[3_B2]
+		$seat4 = $seatCharts.find('.seatCharts-row:eq(3) .seatCharts-seat:eq(1)'),
+		//b[,B5]
+		$seat5 = $seatCharts.find('.seatCharts-row:eq(3) .seatCharts-seat:eq(4)');
 		
-		equal($seatCharts.find('.seatCharts-row:eq(3) .seatCharts-seat:eq(4)').attr('id'), 'b-3-5', 'Correct id assigned.');
-
+		equal(getIdExecutions, 11, 'getId has been called for each seat.');
+		equal(getLabelExecutions, 11, 'getLabel has been called for each seat.');		
+		
+		equal($seat1.text(), 'A1', 'Seat 1 has correct label assigned.');
+		equal($seat1.attr('id'), '1_A1', 'Seat 1 has correct id assigned.');
+		
+		equal($seat2.text(), 'A2', 'Seat 2 has correct label assigned.');
+		equal($seat2.attr('id'), '1_A2', 'Seat 2 has correct id assigned.');
+		
+		equal($seat3.text(), 'a+1+4', 'Seat 3 has correct label assigned.');
+		equal($seat3.attr('id'), 'a-1-4', 'Seat 3 has correct id assigned.');
+		
+		equal($seat4.text(), 'b+3+2', 'Seat 4 has correct label assigned.');
+		equal($seat4.attr('id'), '3_B2', 'Seat 4 has correct id assigned.');
+		
+		equal($seat5.text(), 'B5', 'Seat 5 has correct label assigned.');
+		equal($seat5.attr('id'), 'b-3-5', 'Seat 5 has correct id assigned.');								
 	});	
 	
 	test('Testing disabled left & top containers for labels', function () {
