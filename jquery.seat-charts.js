@@ -597,7 +597,9 @@
 						var seatSet = fn.set();
 						
 						$.each(seatsIds, function(index, seatId) {
-							seatSet.push(seatId, fn.seats[seatId]);
+							if (typeof fn.seats[seatId] === 'object') {
+								seatSet.push(seatId, fn.seats[seatId]);
+							}
 						});
 						
 						return seatSet;
