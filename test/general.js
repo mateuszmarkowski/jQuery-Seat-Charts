@@ -19,11 +19,9 @@
 				],
 				seats: {
 					a: {
-						price   : 100,
 						classes : 'a1-seat-class a2-seat-class'
 					},
 					b: {
-						price   : 40,
 						classes : ['b1-seat-class', 'b2-seat-class']
 					}					
 				
