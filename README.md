@@ -75,14 +75,12 @@ Building maps is fairly easy with jQuery Seat Charts, you can literally pass an 
 
 Each single character represents a different type of seat and you have a freedom of choosing anyone but underscore **_**. Underscore is used to indicate that there shouldn't be any seat at a certain place. In our example I chose **a** seats to be the closest to the screen, **D** meant for disabled and **b** and **c** as just plain seats. I also built a corridor in the middle of our theatre, so people can conviniently reach their seats.
 
-Your chosen characters can carry a hash of data which is a great way to pass crucial seat details such as price or a description that you want to show on hover. What you put in the *data* hash is your choice and the plugin will not intefere with that.
+Your chosen characters can carry a hash of data which is a great way to pass crucial seat details such as price or a description that you want to show on hover.
  
 	seats: {
 		a: {
-			data        : {
-				price       : 24.55,
-				description : 'Fair priced seat!',
-			}
+			price       : 24.55,
+			description : 'Fair priced seat!'
 		}
 	}
 
@@ -101,13 +99,11 @@ All three events have their default handlers but you're more than likely to over
 
 
 	a: {
-		click: function () {
+		click    : function () {
 			//This will only be applied to a seats
 		},
-		data : {
-			price    : 34.99,
-			category : 'VIP Seats'
-		}
+		price    : 34.99,
+		category : 'VIP Seats'
 	}
 
 Each event handler is fired in *seat* context which gives you an easy access (using *this* variable) to its properties, DOM node and data which you may have specified during the setup:
@@ -370,15 +366,6 @@ Custom CSS classes which should be applied to seats. Either an array or a string
 **click**
 
 Custom click handler.
-
-**data**
-
-Your custom hash of details, you can include seat price, category description, basically anything you may need:
-
-	data: {
-		price    : 34.99,
-		category : 'VIP seats'
-	}
 
 **focus**
 
