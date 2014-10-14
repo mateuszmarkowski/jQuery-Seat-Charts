@@ -21,13 +21,19 @@
 				],
 				seats: {
 					a: {
-						classes : 'a1-seat-class a2-seat-class',
-						price   : 45
+						classes  : 'a1-seat-class a2-seat-class',
+						price    : 45,
+						anObject : {
+							aProperty: 'testing'
+						}
 					},
 					b: {
-						classes : ['b1-seat-class', 'b2-seat-class'],
-						price   : 25
-					}					
+						classes  : ['b1-seat-class', 'b2-seat-class'],
+						price    : 25,
+						anObject2: {
+							aProperty2: 23
+						}
+					}				
 				
 				}
 			}, params)
@@ -173,5 +179,104 @@
 		
 		equal(seatCharts.get(['9_12', '', '4_53']).find('b').length, 0, 'Finding in empty set.');
 	});
+	
+	test('Testing .node method', function () {
+		expect(6);
+	
+		var $seatCharts = methodsMapSetup(),
+			seatCharts = $seatCharts.seatCharts();
 		
+		seatCharts.get(['2_2', '5_4']).status('unavailable');
+		
+		ok(seatCharts.get('1_4').node() instanceof jQuery, '.node returns a jQuery object.');
+		
+		equal(seatCharts.get('2_3').node().length, 1, '.node for one seat returns set with 1 element.');
+		
+		equal(seatCharts.get(['2_3', '4_2']).node().length, 2, '.node for two seats returns set with 2 elements.');
+		
+		equal(seatCharts.find('c.available').node().length, 4, '.node returns jQuery set with all objects matching .find query.'); 
+		
+		equal(seatCharts.get('1_4').node()[0], $('#1_4')[0], 'The same node returned by .get and jQuery selector.');
+		
+		equal(seatCharts.get(['2_2', '3_5']).node()[1], $('#3_5')[0], 'The same nodes returned by .get and jQuery selector.');	
+	});
+	
+	test('Testing .each method', function () {
+		expect(4);
+	
+		var $seatCharts = methodsMapSetup(),
+			seatCharts = $seatCharts.seatCharts()
+			executions1 = 0,
+			executions2 = 0,
+			executions3 = 0;
+		
+		seatCharts.get(['5_2', '5_1']).status('selected');
+		
+		seatCharts.find('c.available').each(function () {
+			executions1 += 1;
+		});
+		
+		equal(executions1, 3, '.each callback should be called for each element of the set.');
+		
+		seatCharts.find('c').each(function () {
+			executions2 += 1;
+			
+			return false; //break
+		});
+		
+		equal(executions2, 1, 'Returning false should break .each loop.');
+		
+		seatCharts.find('Z').each(function() {
+			executions3 += 1;
+		});
+		
+		equal(executions3, 0, '.each should not be called when the set is empty.');
+		
+		seatCharts.find('a').each(function () {
+			equal(typeof this.data, 'function', 'Seat is used as the context.');
+			return false;
+		});
+	});
+	
+	test('Testing .data method', function () {
+		expect(4);
+	
+		var $seatCharts = methodsMapSetup(),
+			seatCharts = $seatCharts.seatCharts();
+		
+		propEqual(seatCharts.get('1_2').data(), {
+			classes  : 'a1-seat-class a2-seat-class',
+			price    : 45,
+			anObject : {
+				aProperty: 'testing'
+			}
+		}, 'a seat has correct properties.');
+		
+		propEqual(seatCharts.get('3_4').data(), {
+			classes  : ['b1-seat-class', 'b2-seat-class'],
+			price    : 25,
+			anObject2: {
+				aProperty2: 23
+			}
+		}, 'b seat has correct properties.');	
+		
+		propEqual(seatCharts.get('5_2').data(), {}, 'c seat has correct properties.');
+		
+		seatCharts.get('1_2').data().price = '75';
+		
+		equal(seatCharts.get('1_1').data().price, '75', 'All seat of the same character share the reference to the same object');
+	
+	});
+	
+	test('Testing .char method', function () {
+		var $seatCharts = methodsMapSetup(),
+			seatCharts = $seatCharts.seatCharts();
+			
+		equal(seatCharts.get('5_5').char(), 'c', 'Correct character returned 1.');
+		
+		equal(seatCharts.get('2_3').char(), 'a', 'Correct character returned 2.');
+		
+		equal(seatCharts.get('4_4').char(), 'b', 'Correct character returned 3.');
+	});
+	
 })(jQuery);
