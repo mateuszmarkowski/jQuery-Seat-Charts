@@ -205,7 +205,7 @@
 		expect(4);
 	
 		var $seatCharts = methodsMapSetup(),
-			seatCharts = $seatCharts.seatCharts()
+			seatCharts = $seatCharts.seatCharts(),
 			executions1 = 0,
 			executions2 = 0,
 			executions3 = 0;
