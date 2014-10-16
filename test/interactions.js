@@ -2,7 +2,7 @@
 	
 	module('interactions');
 	
-//Creates a very simple map and returns map's container.
+	//Creates a very simple map and returns map's container.
 	function interactionsMapSetup(params) {
 
 		var $fixture = $('#qunit-fixture'),
@@ -106,6 +106,8 @@
 		
 		seatCharts.get('1_1').node().trigger(rightEvent);
 		
+		//right arrow
+		
 		equal(document.activeElement, document.getElementById('1_2'), 'Right arrow moves focus to the right seat.');
 		
 		equal($seatCharts.attr('aria-activedescendant'), seatCharts.get('1_2').node().attr('id'), 'Test if aria-activedescendant has been populated with the correct id.');
@@ -118,6 +120,46 @@
 		seatCharts.get('1_5').node().trigger(rightEvent);
 			
 		equal(document.activeElement, document.getElementById('2_1'), 'Right arrow moves focus to the first seat of the next row when it reaches the end of the current row.');
+		
+		seatCharts.get('5_5').node().trigger(focusEvent);
+		
+		seatCharts.get('5_5').node().trigger(rightEvent);
+		
+		equal(document.activeElement, document.getElementById('7_1'), 'Right arrow moves focus to the first seat skipping empty spaces.');
+		
+		seatCharts.get('9_1').node().trigger(focusEvent);
+		
+		seatCharts.get('9_1').node().trigger(rightEvent);
+		
+		seatCharts.get('9_2').node().trigger(rightEvent);
+		
+		equal(document.activeElement, document.getElementById('1_1'), 'Right arrow moves focus to the first seat skipping empty spaces and starting over when the last seat is reached.');
+		
+		//left arrow
+		
+		seatCharts.get('2_3').node().trigger(focusEvent);
+		
+		seatCharts.get('2_3').node().trigger(leftEvent);
+		
+		equal(document.activeElement, document.getElementById('2_2'), 'Left arrow moves focus to the left seat.');
+		
+		seatCharts.get('2_2').node().trigger(leftEvent);
+		
+		seatCharts.get('2_1').node().trigger(leftEvent);
+		
+		equal(document.activeElement, document.getElementById('1_5'), 'Left arrow moves focus to the last seat of the previous row when the beginning of the current row is reached.');
+		
+		seatCharts.get('9_1').node().trigger(focusEvent);
+		
+		seatCharts.get('9_1').node().trigger(leftEvent);
+		
+		equal(document.activeElement, document.getElementById('7_5'), 'Left arrow moves focus to the last seat of the previous row when the beginning of the current row is reached skipping empty spaces.');
+		
+		seatCharts.get('1_1').node().trigger(focusEvent);
+		
+		seatCharts.get('1_1').node().trigger(leftEvent);
+		
+		equal(document.activeElement, document.getElementById('9_2'), 'Left arrow moves focus to the last seat when pressed on the first seat skipping empty spaces.');
 	});
 
 	
