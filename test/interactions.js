@@ -87,6 +87,8 @@
 	
 
 	test('Testing focus/blur with keyboard', function () {
+		expect(14);
+	
 		var $seatCharts = interactionsMapSetup(),
 			seatCharts = $seatCharts.seatCharts(),
 			focusEvent,
@@ -103,6 +105,12 @@
 		
 		rightEvent = $.Event('keydown');
 		rightEvent.which = 39;
+		
+		downEvent = $.Event('keydown');
+		downEvent.which = 40;
+		
+		upEvent = $.Event('keydown');
+		upEvent.which = 38;		
 		
 		seatCharts.get('1_1').node().trigger(rightEvent);
 		
@@ -160,6 +168,35 @@
 		seatCharts.get('1_1').node().trigger(leftEvent);
 		
 		equal(document.activeElement, document.getElementById('9_2'), 'Left arrow moves focus to the last seat when pressed on the first seat skipping empty spaces.');
+		
+		//down		
+		
+		seatCharts.get('2_2').node().trigger(focusEvent);
+		
+		seatCharts.get('2_2').node().trigger(downEvent);
+				
+		equal(document.activeElement, document.getElementById('3_2'), 'Down arrow moves focus to the seat below.');
+		
+		seatCharts.get('5_3').node().trigger(focusEvent);
+		
+		seatCharts.get('5_3').node().trigger(downEvent);
+		
+		equal(document.activeElement, document.getElementById('2_3'), 'Down arrow moves focus to the seat below skipping empty spaces.');
+		
+		//up
+		
+		seatCharts.get('4_4').node().trigger(focusEvent);
+		
+		seatCharts.get('4_4').node().trigger(upEvent);
+		
+		equal(document.activeElement, document.getElementById('3_4'), 'Up arrow moves focus to the seat above.');
+		
+		$(document.activeElement).trigger(upEvent);
+		$(document.activeElement).trigger(upEvent);
+		$(document.activeElement).trigger(upEvent);
+		$(document.activeElement).trigger(upEvent);	
+		
+		equal(document.activeElement, document.getElementById('5_4'), 'Up arrow moves focus to the seat above skipping empty spaces.');
 	});
 
 	
