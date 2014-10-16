@@ -198,6 +198,32 @@
 		
 		equal(document.activeElement, document.getElementById('5_4'), 'Up arrow moves focus to the seat above skipping empty spaces.');
 	});
-
+	
+	test('Testing default click callback with mouse', function () {
+		var $seatCharts = interactionsMapSetup(),
+			seatCharts = $seatCharts.seatCharts(),
+			clickEvent;
+		
+		//disable some seats
+		seatCharts.get(['1_4', '4_2']).status('unavailable');
+		
+		clickEvent = $.Event('click');
+		
+		$('#5_2').trigger(clickEvent);
+		
+		equal(seatCharts.find('selected').length, '1', 'Clicking on an available seat should change its status to selected.');
+		
+		equal(seatCharts.get('5_2').style(), 'selected', 'Selected seat should return selected status.');
+		
+		ok(seatCharts.get('5_2').node().hasClass('selected'),  'Selected seat should have selected class.');
+		
+		$('#1_4').trigger(clickEvent);
+		
+		equal(seatCharts.find('selected').length, '1', 'You can not select an unavailable seat.');
+		
+		$('#5_2').trigger(clickEvent);
+		
+		equal(seatCharts.find('selected').length, '0', 'Clicking on a selected seat should change its status to available.');
+	});
 	
 })(jQuery);
