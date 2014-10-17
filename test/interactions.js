@@ -200,20 +200,27 @@
 	});
 	
 	test('Testing default click callback with mouse', function () {
+		expect(7);
+	
 		var $seatCharts = interactionsMapSetup(),
 			seatCharts = $seatCharts.seatCharts(),
-			clickEvent;
+			clickEvent,
+			focusEvent;
 		
 		//disable some seats
 		seatCharts.get(['1_4', '4_2']).status('unavailable');
 		
 		clickEvent = $.Event('click');
 		
+		focusEvent = $.Event('focus');
+		
 		$('#5_2').trigger(clickEvent);
 		
 		equal(seatCharts.find('selected').length, '1', 'Clicking on an available seat should change its status to selected.');
 		
-		equal(seatCharts.get('5_2').style(), 'selected', 'Selected seat should return selected status.');
+		equal(seatCharts.get('5_2').style(), 'selected', 'Selected seat should return selected style.');
+		
+		equal(seatCharts.get('5_2').status(), 'selected', 'Selected seat should return selected status.');
 		
 		ok(seatCharts.get('5_2').node().hasClass('selected'),  'Selected seat should have selected class.');
 		
@@ -224,6 +231,53 @@
 		$('#5_2').trigger(clickEvent);
 		
 		equal(seatCharts.find('selected').length, '0', 'Clicking on a selected seat should change its status to available.');
+		
+		$('#3_3').trigger(focusEvent);
+		
+		$('#3_3').trigger(clickEvent);
+		
+		equal(seatCharts.get('3_3').status(), 'selected', 'Clicking on a focused seat should change its status to selected.');
 	});
+	
+	test('Testing default click callback with keyboard', function () {
+		expect(7);
+		
+		var $seatCharts = interactionsMapSetup(),
+			seatCharts = $seatCharts.seatCharts(),
+			spacebarEvent,
+			focusEvent;
+		
+		//disable some seats
+		seatCharts.find('c').status('unavailable');
+		
+		spacebarEvent = $.Event('keydown');
+		spacebarEvent.which = 32;
+		
+		focusEvent = $.Event('focus');
+		
+		$('#1_1').trigger(spacebarEvent);
+		
+		equal(seatCharts.find('selected').length, '1', 'Pressing spacebar on an available seat should change its status to selected.');
+		
+		equal(seatCharts.get('1_1').style(), 'selected', 'Selected seat should return selected style.');
+		
+		equal(seatCharts.get('1_1').status(), 'selected', 'Selected seat should return selected status.');
+		
+		ok(seatCharts.get('1_1').node().hasClass('selected'),  'Selected seat should have selected class.');
+		
+		$('#7_2').trigger(spacebarEvent);
+		
+		equal(seatCharts.find('selected').length, '1', 'You can not select an unavailable seat.');
+		
+		$('#1_1').trigger(spacebarEvent);
+		
+		equal(seatCharts.find('selected').length, '0', 'Pressing spacebar on a selected seat should change its status to available.');
+		
+		$('#2_5').trigger(focusEvent);
+		
+		$('#2_5').trigger(spacebarEvent);
+		
+		equal(seatCharts.get('2_5').status(), 'selected', 'Pressing spacebar on a focused seat should change its status to selected.');		
+	});	
 	
 })(jQuery);
