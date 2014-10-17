@@ -317,4 +317,63 @@
 		
 	});	
 
+	test('Testing map-level callbacks', function () {
+		var $seatCharts = simpleMapSetup({
+				click : function () {
+					executions.click += 1;
+				
+					if (this.status() == 'available') {
+						return 'selected';
+					} else if (this.status() == 'selected') {
+						return 'available';
+					} else {
+						return this.style();
+					}
+				},
+				focus  : function() {
+					executions.focus += 1;
+
+					if (this.status() == 'available') {
+						return 'focused';
+					} else  {
+						return this.style();
+					}
+				},
+				blur   : function() {
+					executions.blur += 1;
+
+					return this.status();
+				}
+			}),
+			seatCharts = $seatCharts.seatCharts(),
+			executions = {
+				click : 0,
+				focus : 0,
+				blur  : 0,
+				reset : function () {
+					this.click = this.focus = this.blur = 0;
+				}
+			},
+			clickEvent = $.Event('click'),
+			mouseenterEvent = $.Event('mouseenter'),
+			mouseleaveEvent = $.Event('mouseleave'),
+			focusEvent = $.Event('focus'),
+			keyEvent = $.Event('keydown');
+		
+		seatCharts.get('2_3').status('unavailable');
+		
+		seatCharts.get('2_1').node().trigger(mouseenterEvent);
+		seatCharts.get('2_1').node().trigger(mouseleaveEvent);		
+		seatCharts.get('2_2').node().trigger(mouseenterEvent);
+		seatCharts.get('2_2').node().trigger(mouseleaveEvent);
+		seatCharts.get('2_3').node().trigger(mouseenterEvent);
+		
+		propEqual(executions, {
+			click : 0,
+			focus : 3,
+			blur  : 4,
+			reset : function () {}
+		}, 'Blur and focus are correctly triggered.');
+	});
+
 })(jQuery);
