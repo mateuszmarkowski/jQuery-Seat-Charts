@@ -1,5 +1,5 @@
 (function ($) {
-	
+
 	module('general');
 	
 	//Creates a very simple map and returns map's container.
@@ -32,6 +32,15 @@
 		return $div;
 	}
 	
+	function Counter() {
+		this.click = 0;
+		this.focus = 0;
+		this.blur  = 0;
+		
+		this.reset = function () {
+			this.click = this.focus = this.blur = 0;
+		};
+	}
 
 	test('Testing general structure of a simple map.', function () {
 		expect(5);
@@ -346,14 +355,8 @@
 				}
 			}),
 			seatCharts = $seatCharts.seatCharts(),
-			executions = {
-				click : 0,
-				focus : 0,
-				blur  : 0,
-				reset : function () {
-					this.click = this.focus = this.blur = 0;
-				}
-			},
+			//simple counter object
+			executions = new Counter,
 			clickEvent = $.Event('click'),
 			mouseenterEvent = $.Event('mouseenter'),
 			mouseleaveEvent = $.Event('mouseleave'),
@@ -374,6 +377,133 @@
 			blur  : 4,
 			reset : function () {}
 		}, 'Blur and focus are correctly triggered.');
+		
+		//start over
+		executions.reset();
+		
+		seatCharts.get('3_1').node().trigger(mouseenterEvent);
+		
+		//arrow down
+		keyEvent.which = 38;
+		seatCharts.get('3_1').node().trigger(keyEvent);
+		
+		//spacebar
+		keyEvent.which = 32;
+		
+		seatCharts.get('2_1').node().trigger(keyEvent);
+		
+		propEqual(executions, {
+			click : 1,
+			focus : 2,
+			blur  : 3,
+			reset : function () {}
+		}, 'Blur, focus and click are correctly triggered.');
 	});
+	
+	test('Testing seat-level callbacks', function () {
+		var $seatCharts = simpleMapSetup({
+				seats : {
+					a : {
+						click : function () {
+							executionsA.click += 1;
+						
+							if (this.status() == 'available') {
+								return 'selected';
+							} else if (this.status() == 'selected') {
+								return 'available';
+							} else {
+								return this.style();
+							}
+						},
+						focus  : function() {
+							executionsA.focus += 1;
+		
+							if (this.status() == 'available') {
+								return 'focused';
+							} else  {
+								return this.style();
+							}
+						},
+						blur   : function() {
+							executionsA.blur += 1;
+		
+							return this.status();
+						}
+					},
+					b : {
+						click : function () {
+							executionsB.click += 1;
+						
+							if (this.status() == 'available') {
+								return 'selected';
+							} else if (this.status() == 'selected') {
+								return 'available';
+							} else {
+								return this.style();
+							}
+						},
+						focus  : function() {
+							executionsB.focus += 1;
+		
+							if (this.status() == 'available') {
+								return 'focused';
+							} else  {
+								return this.style();
+							}
+						},
+						blur   : function() {
+							executionsB.blur += 1;
+		
+							return this.status();
+						}
+					}
+				}
+
+			}),
+			seatCharts = $seatCharts.seatCharts(),
+			//each seat type has its own callbacks and hence different counters
+			executionsA = new Counter,
+			executionsB = new Counter,
+			clickEvent = $.Event('click'),
+			mouseenterEvent = $.Event('mouseenter'),
+			mouseleaveEvent = $.Event('mouseleave'),
+			focusEvent = $.Event('focus'),
+			keyEvent = $.Event('keydown');
+		
+		seatCharts.get('2_3').status('unavailable');
+		
+		seatCharts.get('2_1').node().trigger(mouseenterEvent);
+		seatCharts.get('2_1').node().trigger(mouseleaveEvent);		
+		seatCharts.get('2_2').node().trigger(mouseenterEvent);
+		seatCharts.get('2_2').node().trigger(mouseleaveEvent);
+		seatCharts.get('2_3').node().trigger(mouseenterEvent);
+
+		propEqual(executionsB, {
+			click : 0,
+			focus : 3,
+			blur  : 4,
+			reset : function () {}
+		}, 'Blur, focus and click are correctly triggered for B seats.');
+		
+		seatCharts.get('1_1').node().trigger(mouseenterEvent);
+		
+		//arrow right
+		keyEvent.which = 39;
+		seatCharts.get('1_1').node().trigger(keyEvent);
+		seatCharts.get('1_2').node().trigger(keyEvent);
+		
+		//spacebar
+		keyEvent.which = 32;
+		
+		seatCharts.get('1_4').node().trigger(keyEvent);
+
+		propEqual(executionsA, {
+			click : 1,
+			focus : 3,
+			blur  : 4,
+			reset : function () {}
+		}, 'Blur, focus and click are correctly triggered for A seats.');
+
+	});	
 
 })(jQuery);
