@@ -1,5 +1,5 @@
 /*!
- * jQuery-Seat-Charts v1.1.0
+ * jQuery-Seat-Charts v1.1.1
  * https://github.com/mateuszmarkowski/jQuery-Seat-Charts
  *
  * Copyright 2013, 2014 Mateusz Markowski
@@ -122,7 +122,7 @@
 
 								//if nothing changes, do nothing
 								if (newStyle == oldStyle) {
-									return;
+									return oldStyle;
 								}
 								
 								//focused is a special style which is not associated with status

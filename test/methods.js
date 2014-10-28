@@ -104,7 +104,7 @@
 	});
 	
 	test('Testing .status method', function () {
-		expect(9);
+		expect(10);
 	
 		var $seatCharts = methodsMapSetup(),
 			seatCharts = $seatCharts.seatCharts(),
@@ -139,6 +139,14 @@
 		equal(seatCharts.get('4_4').status(), 'unavailable', 'Alternative .status usage for the whole set 1.');
 		equal(seatCharts.get('5_2').status(), 'unavailable', 'Alternative .status usage for the whole set 2.');
 		equal(seatCharts.get('5_1').status(), 'unavailable', 'Alternative .status usage for the whole set 3.');
+		
+		//Issue #8 - Very odd behaviour when using sc.status();
+		seatCharts.get(['1_1', '1_2']).status('unavailable');
+		
+		//settings the same status twice
+		seatCharts.get(['1_1', '1_2']).status('unavailable');
+		
+		equal(seatCharts.get('1_1').status(), 'unavailable', 'Status remains correct after setting the same status again');
 	});
 	
 	test('Testing .find selector', function () {
