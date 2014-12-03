@@ -341,8 +341,10 @@
 				$headerRow.append($('<div></div>').addClass('seatCharts-cell'));
 			}
 			
-				
 			$.each(settings.naming.columns, function(index, value) {
+				if(value == '-'){ // take dash as a blank columns
+					value = ''
+				}
 				$headerRow.append(
 					$('<div></div>')
 						.addClass('seatCharts-cell')
@@ -353,11 +355,94 @@
 		
 		fn.append($headerRow);
 		
+		// build up inner map for other use
+		var emptyMap = {};
+		$.each(settings.map, function(row, characters) {
+			if(!characters) return;
+			if(characters.match(/[^A-Za-z0-9_-]/)){
+				settings.map.splice(row, 1); // remove this line from seat map
+				emptyMap[row] = characters; 
+			}
+// 			if(characters.match(/[^A-Za-z0-9_]/)){
+				// settings.map.splice(row, 1);
+// 				emptyMap[row] = characters;
+// 			}
+		
+		})
+		
 		//do this for each map row
 		$.each(settings.map, function(row, characters) {
-
+			
 			var $row = $('<div></div>').addClass('seatCharts-row');
-				
+
+			// if any empty row exists then add it up.	
+			if(emptyMap[row]){
+				var fm =emptyMap[row];
+				if(fm){
+					var $f = $('<div></div>').addClass('seatCharts-row');
+					// fill up the slot for numbering 
+					$f.append($('<div></div>').addClass('seatCharts-cell seatCharts-space'));
+					
+					// see if there any facility to add up
+					var fac = settings.facilityMap[row]||undefined;
+					
+					$.each(fm.match(/[+*]{1}(\[[0-9a-z_]{0,}(,[0-9a-z_ ]+)?\])?/gi), function (column, characterParams) {
+						var matches         = characterParams.match(/([+*]{1})(\[([0-9a-z_ ,]+)\])?/i),
+						//no matter if user specifies [] params, the character should be in the second element
+						character       = matches[1],
+						//check if user has passed some additional params to override id or label
+						params          = typeof matches[3] !== 'undefined' ? matches[3].split(',') : [],
+						//id param should be first
+						overrideId      = params.length ? params[0] : null,
+						//label param should be second
+						overrideLabel   = params.length === 2 ? params[1] : null;
+						
+						// Get symbol from header array by column 
+						var header = column==0?settings.naming.columns[0]:settings.naming.columns[column];
+						
+					$f.append(character != '+' ?
+						//if the character is not an underscore (empty space)
+						(function(naming) {
+	
+							//so users don't have to specify empty objects
+							settings.seats[character] = character in settings.seats ? settings.seats[character] : {};
+							var f = settings.seats[character];
+							// if($.inArray(header,fac.cordinates) != -1){
+// 								f = fac;
+// 							}
+							// set up attributes for match character
+							return $('<div></div>').addClass('seatCharts-cell '+f.classes).attr('id',row+header).text(f.text);
+						
+						})() :
+						//this is just an empty space (_)
+						$('<div></div>').addClass('seatCharts-cell seatCharts-space').attr('id',row+header)	
+						);
+					});
+					fn.append($f);
+					
+				}else{
+					// append a blank row
+					fn.append($('<div></div>').addClass('seatCharts-row')); 
+				}
+			}
+			
+			
+			// set up elements according to settings in facility map 
+			if(fac){
+				if( Object.prototype.toString.call( fac.cordinates ) === '[object Array]' ) {
+					var $target;
+					$.each(fac.cordinates, function(index, col){
+						if(index == 0){
+							$target= $('#'+row+col); //save the first element
+							return;
+						}
+						$('#'+row+col).remove(); //remove the rests
+						// console.log($('#'+row+col))
+					})
+					$target.addClass(fac.classes).text(fac.text); // set it up
+				}
+			}
+			
 			if (settings.naming.left) {
 				$row.append(
 					$('<div></div>')
@@ -384,8 +469,9 @@
 			 *
 			 */
 			 
-			$.each(characters.match(/[a-z_]{1}(\[[0-9a-z_]{0,}(,[0-9a-z_ ]+)?\])?/gi), function (column, characterParams) { 
-				var matches         = characterParams.match(/([a-z_]{1})(\[([0-9a-z_ ,]+)\])?/i),
+			$.each(characters.match(/[a-z_-]{1}(\[[0-9a-z_]{0,}(,[0-9a-z_ ]+)?\])?/gi), function (column, characterParams) { 
+					
+				var matches         = characterParams.match(/([a-z_-]{1})(\[([0-9a-z_ ,]+)\])?/i),
 					//no matter if user specifies [] params, the character should be in the second element
 					character       = matches[1],
 					//check if user has passed some additional params to override id or label
@@ -394,7 +480,20 @@
 					overrideId      = params.length ? params[0] : null,
 					//label param should be second
 					overrideLabel   = params.length === 2 ? params[1] : null;
-								
+				
+				// add a blank cell if any dash exists 
+				if(character=='-'){
+					$row.append($('<div></div>').addClass('seatCharts-cell seatCharts-space'));
+					return;
+				}
+				// if(settings.facilityMap){
+	// 				var f = settings.facilityMap[row];
+	// 				if(f){
+	// 					var $t = $('<div></div>').addClass(f.classes).text(f.text);
+	// 					fn.append($t);
+	// 				}
+	// 			}
+				
 				$row.append(character != '_' ?
 					//if the character is not an underscore (empty space)
 					(function(naming) {
@@ -420,7 +519,7 @@
 					$('<div></div>').addClass('seatCharts-cell seatCharts-space')	
 				);
 			});
-			
+
 			fn.append($row);
 		});
 	
