@@ -386,11 +386,12 @@ You can pass either one id or an array of ids:
 
 ### .find( mixed )
 
-Find method lets you search using *character*, seat status or a combination of both (separated with a dot):
+Find method lets you search using *character*, seat status, combination of both (separated with a dot) or a regexp:
 
 	sc.find('a'); //find all a seats
 	sc.find('unavailable'); //find all unavailable seats
 	sc.find('a.available'); //find all available a seats
+	sc.find(/^1_[0-9]+/); //find all seats in the first row
 	
 
 #### .get and .find chained together:

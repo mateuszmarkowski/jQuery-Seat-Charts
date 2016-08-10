@@ -150,7 +150,7 @@
 	});
 	
 	test('Testing .find selector', function () {
-		expect(14);
+		expect(16);
 	
 		var $seatCharts = methodsMapSetup(),
 			seatCharts = $seatCharts.seatCharts();
@@ -186,6 +186,10 @@
 		equal(seatCharts.get(['2_1', '3_2', '5_5', '5_3', '4_2', '2_3']).find('c.invalid-status').length, 0, 'Finding in set by character and invalid status.');
 		
 		equal(seatCharts.get(['9_12', '', '4_53']).find('b').length, 0, 'Finding in empty set.');
+		
+		equal(seatCharts.find(/^1_.*/).length, 4, 'Finding first row seats using a regexp.');
+		
+		equal(seatCharts.find(/^[0-9]+_3/).length, 4, 'Finding third column seats using a regexp.');
 	});
 	
 	test('Testing .node method', function () {
