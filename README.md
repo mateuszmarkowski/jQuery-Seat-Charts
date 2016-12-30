@@ -86,6 +86,57 @@ Your chosen characters can carry a hash of data which is a great way to pass cru
 
 Once you build your map and define seats, you can start implementing the booking magic.
 
+### Empty rows and columns
+
+if you would like to add some empty rows and columns, you could try to build up seat map like following example.
+
+One thing to remember is that you have to set up header naming and row/column defination.
+
+	//Seat map definition
+	// Setting empty row by fill up with +
+    // Setting empty column by add -  Make sure you add for every single row but empty row. 
+    map: [
+		'ff-ff',
+		'+++++',
+		'ff-ff',
+		'ee-ee',
+		'ee-ee',
+		'ee-__',
+		'+++++',
+		'ee-ee',
+		'ee-ee',
+		'ee-ee',
+	],
+	naming : {
+			top : true,
+			columns: ['A', 'B', '-','C', 'D',],
+			},
+
+### Facility Map
+
+This map allows you to put facility on cell. If you have need to occupy two cell space, you will have to compose relative width for it.
+
+	facilityMap:{
+		5:{
+			cordinates:['B','-'],
+			text: 'Toilet',
+			classes: 'test'
+		   },
+				},
+
+### Special Seat
+
+it will see * as a special seat you can add it to any empty row.
+		
+		seats: {
+						'*': {
+							text: 'bar',
+							classes: 'whateverCSS'
+						},
+						
+See [Example](http://jsfiddle.net/j4k2rL4L/).
+
+
 ## Booking Magic
 
 JSC combines keyboard and mouse events to offer a unified API. There're three types of events which JSC can produce:
