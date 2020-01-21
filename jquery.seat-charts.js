@@ -475,6 +475,12 @@
 	
 		//public methods of seatCharts
 		fn.data('seatCharts', {
+         settings: {
+           columns: settings.naming.columns.length,
+           rows: settings.naming.rows.length,
+           top: settings.naming.top,
+           left: settings.naming.left,
+         },
 			seats   : seats,
 			seatIds : seatIds,
 			//set for one, set for many, get for one
