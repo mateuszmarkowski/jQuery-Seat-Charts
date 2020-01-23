@@ -26,6 +26,7 @@
 				naming  : {
 					top    : true,
 					left   : true,
+					right  : false,
 					getId  : function(character, row, column) {
 						return row + '_' + column;
 					},
@@ -349,6 +350,10 @@
 						.text(value)
 				);
 			});
+         
+			if (settings.naming.right) {
+				$headerRow.append($('<div></div>').addClass('seatCharts-cell'));
+			}
 		}
 		
 		fn.append($headerRow);
@@ -421,6 +426,14 @@
 				);
 			});
 			
+         if (settings.naming.right) {
+				$row.append(
+					$('<div></div>')
+						.addClass('seatCharts-cell seatCharts-space')
+						.text(settings.naming.rows[row])
+				);
+			}
+
 			fn.append($row);
 		});
 	
@@ -480,6 +493,7 @@
            rows: settings.naming.rows.length,
            top: settings.naming.top,
            left: settings.naming.left,
+           right: settings.naming.right,
          },
 			seats   : seats,
 			seatIds : seatIds,
