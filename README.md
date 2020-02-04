@@ -414,7 +414,7 @@ Both methods return either one seat or a set of seats which share similiar metho
 
 ## Properties
 
-** settings **
+**settings**
 
 Contains seatChart settings:
 
