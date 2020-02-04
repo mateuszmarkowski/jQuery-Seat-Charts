@@ -232,6 +232,14 @@ Click handler. Fired when user clicks on a seat or hits spacebar on a focused se
 		
 	},
 
+### statusChange
+
+Fired when a seat was selected or unselected.
+
+        statusChange: function (seat) {
+              console.log('Selected seat: ', seat);
+        },
+
 ### focus
 
 Focus handler. Fired when seat receives focus. You most likely don't want to overwrite this one.
@@ -335,6 +343,10 @@ Sometimes it can be really hard to generate labels you want with getLabel, so no
 
 Bool, defaults to true. If true, JSC will display an additional column on the left of the map with row names as specified by you using *rows* array or by default JSC settings
 
+**right**
+
+Bool, defaults to false. If true, JSC will display an additional column on the right of the map with row names as specified by you using *rows* array or by default JSC settings
+
 **rows**
 
 An array of row names, *rows* length must equal the actual number of rows:
@@ -399,6 +411,18 @@ Find method lets you search using *character*, seat status, combination of both 
 	sc.get(['1_2', '1_3', '1_4']).find('available'); //find available seats within specified seat ids
 
 Both methods return either one seat or a set of seats which share similiar methods:
+
+## Properties
+
+** settings **
+
+Contains seatChart settings:
+
+* columns: Columns amount.
+* rows: Rows amount.
+* top: True if JSC is displaying a top row.
+* left: True if JSC is displaying a left column.
+* right: True if JSC is displaying a right column.
 
 ## Set Methods
 

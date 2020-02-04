@@ -136,7 +136,13 @@
 									fn.settings.$node.switchClass(oldStyle, newStyle, 200) :
 									fn.settings.$node.removeClass(oldStyle).addClass(newStyle);
 									
-								return fn.settings.style = newStyle;
+								fn.settings.style = newStyle;
+                        if ((oldStyle == 'focused' && newStyle == 'selected') || (oldStyle == 'selected' && newStyle == 'available')) {
+                          if (seatChartsSettings.statusChange) {
+                            seatChartsSettings.statusChange(fn.settings);
+                          }
+                        }
+                        return fn.settings.style;
 							})(arguments[0]) : fn.settings.style;
 					};
 					
