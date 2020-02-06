@@ -26,6 +26,7 @@
 				naming  : {
 					top    : true,
 					left   : true,
+					right  : false,
 					getId  : function(character, row, column) {
 						return row + '_' + column;
 					},
@@ -135,7 +136,17 @@
 									fn.settings.$node.switchClass(oldStyle, newStyle, 200) :
 									fn.settings.$node.removeClass(oldStyle).addClass(newStyle);
 									
-								return fn.settings.style = newStyle;
+								fn.settings.style = newStyle;
+                        if (
+                                (oldStyle == 'available' && newStyle == 'selected') ||
+                                (oldStyle == 'focused' && newStyle == 'selected') ||
+                                (oldStyle == 'selected' && newStyle == 'available')
+                        ) {
+                          if (seatChartsSettings.statusChange) {
+                            seatChartsSettings.statusChange(fn.settings);
+                          }
+                        }
+                        return fn.settings.style;
 							})(arguments[0]) : fn.settings.style;
 					};
 					
@@ -349,6 +360,10 @@
 						.text(value)
 				);
 			});
+         
+			if (settings.naming.right) {
+				$headerRow.append($('<div></div>').addClass('seatCharts-cell'));
+			}
 		}
 		
 		fn.append($headerRow);
@@ -421,6 +436,14 @@
 				);
 			});
 			
+         if (settings.naming.right) {
+				$row.append(
+					$('<div></div>')
+						.addClass('seatCharts-cell seatCharts-space')
+						.text(settings.naming.rows[row])
+				);
+			}
+
 			fn.append($row);
 		});
 	
@@ -475,6 +498,13 @@
 	
 		//public methods of seatCharts
 		fn.data('seatCharts', {
+         settings: {
+           columns: settings.naming.columns.length,
+           rows: settings.naming.rows.length,
+           top: settings.naming.top,
+           left: settings.naming.left,
+           right: settings.naming.right,
+         },
 			seats   : seats,
 			seatIds : seatIds,
 			//set for one, set for many, get for one
